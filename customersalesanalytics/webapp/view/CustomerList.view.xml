@@ -13,6 +13,10 @@
                 <ComboBox id="cbCountry" width="8rem" items="{lf>/countries}" selectionChange=".onApplyFilter">
                     <core:Item key="{lf>key}" text="{lf>text}"/>
                 </ComboBox>
+                <Label text="Công ty:"/>
+                <ComboBox id="cbCompany" width="7rem" placeholder="Sales Org" items="{lf>/companies}" selectionChange=".onApplyFilter">
+                    <core:Item key="{lf>key}" text="{lf>text}"/>
+                </ComboBox>
                 <Label text="Vùng:"/>
                 <Input id="inRegion" width="6rem" placeholder="VD: 01" submit=".onApplyFilter"/>
                 <CheckBox id="cbActive" text="Chỉ khách có giao dịch" select=".onApplyFilter"/>
