@@ -1,0 +1,148 @@
+{
+  "_version": "1.48.0",
+  "sap.app": {
+    "id": "com.example.customeranalytics.customersalesanalytics",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.33.0",
+      "toolsId": "29fc2018-66e8-47d6-92de-bfcf543a01cc"
+    },
+    "dataSources": {
+      "ZC324_PROJECT2_CDS_VAN": {
+        "uri": "/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Annotations(TechnicalName='ZC324_PROJECT2_CDS_VAN',Version='0001')/$value/",
+        "type": "ODataAnnotation",
+        "settings": {
+          "localUri": "localService/mainService/ZC324_PROJECT2_CDS_VAN.xml"
+        }
+      },
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/ZC324_PROJECT2_CDS/",
+        "type": "OData",
+        "settings": {
+          "annotations": [
+            "ZC324_PROJECT2_CDS_VAN"
+          ],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.108.33",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.viz": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.example.customeranalytics.customersalesanalytics.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "com.example.customeranalytics.customersalesanalytics.view",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "clearControlAggregation": false,
+        "transition": "slide"
+      },
+      "routes": [
+        {
+          "name": "RouteDashboard",
+          "pattern": ":?query:",
+          "target": [
+            "TargetDashboard"
+          ]
+        },
+        {
+          "name": "RouteCustomerList",
+          "pattern": "customers",
+          "target": [
+            "TargetCustomerList"
+          ]
+        },
+        {
+          "name": "RouteCustomerDetail",
+          "pattern": "customers/{customerId}",
+          "target": [
+            "TargetCustomerDetail"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetDashboard": {
+          "viewType": "XML",
+          "viewId": "Dashboard",
+          "viewName": "Dashboard"
+        },
+        "TargetCustomerList": {
+          "viewType": "XML",
+          "viewId": "CustomerList",
+          "viewName": "CustomerList"
+        },
+        "TargetCustomerDetail": {
+          "viewType": "XML",
+          "viewId": "CustomerDetail",
+          "viewName": "CustomerDetail"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "com.example.customeranalytics.customersalesanalytics.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "App"
+    }
+  }
+}

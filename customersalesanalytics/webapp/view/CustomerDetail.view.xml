@@ -1,0 +1,78 @@
+<mvc:View controllerName="com.example.customeranalytics.customersalesanalytics.controller.CustomerDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core" core:require="{ DateType: 'sap/ui/model/type/Date' }">
+
+    <Page id="detailPage" title="Chi tiết khách hàng" showNavButton="true" navButtonPress=".onNavBack">
+
+        <content>
+            <!-- THÔNG TIN KHÁCH HÀNG -->
+            <ObjectHeader id="customerHeader" responsive="true" title="{CustomerName}" number="{path: 'TotalOrderValue', formatter: '.formatAmount'}" numberUnit="{Currency}">
+                <attributes>
+                    <ObjectAttribute title="Mã khách hàng" text="{CustomerNumber}"/>
+                    <ObjectAttribute title="Quốc gia" text="{Country}"/>
+                    <ObjectAttribute title="Vùng" text="{Region}"/>
+                    <ObjectAttribute title="Thành phố" text="{City}"/>
+                </attributes>
+                <statuses>
+                    <ObjectStatus title="Tổng số đơn" text="{TotalOrders}" state="Information"/>
+                    <ObjectStatus title="Đơn gần nhất" text="{
+                            path: 'LastOrderDate',
+                            type: 'DateType',
+                            formatOptions: { pattern: 'dd.MM.yyyy', UTC: true }
+                        }"/>
+                    <ObjectStatus title="Giao dịch" text="{= ${TotalOrders} > 0 ? 'Có giao dịch' : 'Chưa có giao dịch' }" state="{= ${TotalOrders} > 0 ? 'Success' : 'Warning' }"/>
+                </statuses>
+            </ObjectHeader>
+
+            <!-- LỌCH SỬ ĐƠN HÀNG: đọc qua navigation to_OrderHistory -->
+            <Table id="orderTable" class="sapUiSmallMarginTop" growing="true" growingThreshold="20" noDataText="Khách hàng này chưa có đơn hàng" updateFinished=".onOrdersUpdated" items="{
+                    path: 'to_OrderHistory',
+                    parameters: { select: 'VBELN,ERDAT,AUART,VKORG,VTWEG,SPART,NETWR,WAERK' },
+                    sorter: { path: 'ERDAT', descending: true }
+                }">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title id="orderTitle" text="Lịch sử đơn hàng"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column>
+                        <Text text="Số đơn"/>
+                    </Column>
+                    <Column>
+                        <Text text="Ngày tạo"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="Loại đơn"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="Sales Org"/>
+                    </Column>
+                    <Column minScreenWidth="Desktop" demandPopin="true">
+                        <Text text="Kênh / Ngành"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="Giá trị đơn"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <ObjectIdentifier title="{VBELN}"/>
+                            <Text text="{
+                                path: 'ERDAT',
+                                type: 'DateType',
+                                formatOptions: { pattern: 'dd.MM.yyyy', UTC: true }
+                            }"/>
+                            <Text text="{AUART}"/>
+                            <Text text="{VKORG}"/>
+                            <Text text="{VTWEG} / {SPART}"/>
+                            <ObjectNumber number="{path: 'NETWR', formatter: '.formatAmount'}" unit="{WAERK}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

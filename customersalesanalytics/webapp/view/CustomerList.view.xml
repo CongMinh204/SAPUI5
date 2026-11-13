@@ -1,0 +1,80 @@
+<mvc:View controllerName="com.example.customeranalytics.customersalesanalytics.controller.CustomerList"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core" core:require="{ DateType: 'sap/ui/model/type/Date' }">
+
+    <Page id="listPage" title="Danh sách khách hàng" showNavButton="true" navButtonPress=".onNavBack">
+
+        <content>
+            <!-- BỘ LỌC -->
+            <OverflowToolbar class="sapUiSmallMarginBeginEnd">
+                <SearchField id="searchField" width="16rem" placeholder="Tìm theo mã hoặc tên khách" search=".onApplyFilter"/>
+                <Label text="Quốc gia:"/>
+                <ComboBox id="cbCountry" width="8rem" items="{lf>/countries}" selectionChange=".onApplyFilter">
+                    <core:Item key="{lf>key}" text="{lf>text}"/>
+                </ComboBox>
+                <Label text="Vùng:"/>
+                <Input id="inRegion" width="6rem" placeholder="VD: 01" submit=".onApplyFilter"/>
+                <CheckBox id="cbActive" text="Chỉ khách có giao dịch" select=".onApplyFilter"/>
+                <ToolbarSpacer/>
+                <Button text="Lọc" type="Emphasized" icon="sap-icon://filter" press=".onApplyFilter"/>
+                <Button text="Xóa lọc" icon="sap-icon://clear-filter" press=".onClearFilter"/>
+            </OverflowToolbar>
+
+            <!-- BẢNG KHÁCH HÀNG -->
+            <Table id="customerTable" growing="true" growingThreshold="20" growingScrollToLoad="false" updateFinished=".onUpdateFinished" items="{
+                    path: '/ZC324_PROJECT2',
+                    parameters: {
+                        select: 'CustomerNumber,CustomerName,Country,Region,City,TotalOrders,TotalOrderValue,Currency,LastOrderDate,HasTransaction'
+                    },
+                    sorter: { path: 'CustomerNumber' }
+                }">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title id="tableTitle" text="Khách hàng"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column>
+                        <Text text="Khách hàng"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="Quốc gia"/>
+                    </Column>
+                    <Column minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="Vùng"/>
+                    </Column>
+                    <Column minScreenWidth="Desktop" demandPopin="true">
+                        <Text text="Thành phố"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="Số đơn"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="Tổng giá trị"/>
+                    </Column>
+                    <Column minScreenWidth="Desktop" demandPopin="true">
+                        <Text text="Đơn gần nhất"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Navigation" press=".onItemPress">
+                        <cells>
+                            <ObjectIdentifier title="{CustomerName}" text="{CustomerNumber}"/>
+                            <Text text="{Country}"/>
+                            <Text text="{Region}"/>
+                            <Text text="{City}"/>
+                            <Text text="{TotalOrders}"/>
+                            <ObjectNumber number="{path: 'TotalOrderValue', formatter: '.formatAmount'}" unit="{Currency}"/>
+                            <Text text="{
+                                path: 'LastOrderDate',
+                                type: 'DateType',
+                                formatOptions: { pattern: 'dd.MM.yyyy', UTC: true }
+                            }"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

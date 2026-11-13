@@ -1,0 +1,126 @@
+<mvc:View controllerName="com.example.customeranalytics.customersalesanalytics.controller.Dashboard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+    <Page id="dashboardPage" title="Customer Sales Analytics">
+        <headerContent>
+            <Button text="Danh sách khách hàng" icon="sap-icon://customer" press=".onGoToList"/>
+        </headerContent>
+
+        <content>
+            <MessageStrip visible="{dash>/hasMessage}" text="{dash>/message}" type="Error" showIcon="true" class="sapUiSmallMargin"/>
+
+            <!-- BỘ LỌC -->
+            <OverflowToolbar class="sapUiSmallMarginBeginEnd">
+                <Label text="Quốc gia:"/>
+                <Select id="selCountry" selectedKey="{dash>/selCountry}" items="{dash>/countryOptions}" change=".onFilterChange">
+                    <core:Item key="{dash>key}" text="{dash>text}"/>
+                </Select>
+                <ToolbarSpacer width="1rem"/>
+                <Label text="Loại tiền:"/>
+                <Select id="selCurrency" selectedKey="{dash>/selCurrency}" items="{dash>/currencyOptions}" change=".onFilterChange">
+                    <core:Item key="{dash>key}" text="{dash>text}"/>
+                </Select>
+                <ToolbarSpacer/>
+                <Button text="Tải lại" icon="sap-icon://refresh" press=".onRefresh"/>
+            </OverflowToolbar>
+
+            <!-- KPI -->
+            <HBox wrap="Wrap" class="sapUiSmallMargin">
+                <GenericTile header="Tổng số khách hàng" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                    <TileContent>
+                        <NumericContent value="{dash>/kpi/totalCustomers}" icon="sap-icon://customer" withMargin="false" truncateValueTo="10"/>
+                    </TileContent>
+                </GenericTile>
+                <GenericTile header="Khách có giao dịch" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                    <TileContent footer="{dash>/kpi/activeRate}">
+                        <NumericContent value="{dash>/kpi/activeCustomers}" icon="sap-icon://activity-items" valueColor="Good" withMargin="false" truncateValueTo="10"/>
+                    </TileContent>
+                </GenericTile>
+                <GenericTile header="Tổng số đơn hàng" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                    <TileContent>
+                        <NumericContent value="{dash>/kpi/totalOrders}" icon="sap-icon://sales-order" withMargin="false" truncateValueTo="10"/>
+                    </TileContent>
+                </GenericTile>
+                <GenericTile header="Tổng giá trị mua hàng" subheader="{dash>/selCurrency}" class="sapUiTinyMarginEnd sapUiTinyMarginBottom">
+                    <TileContent unit="{dash>/selCurrency}">
+                        <NumericContent value="{dash>/kpi/totalValue}" scale="{dash>/kpi/totalValueScale}" icon="sap-icon://lead" withMargin="false" truncateValueTo="10"/>
+                    </TileContent>
+                </GenericTile>
+            </HBox>
+
+            <!-- BIỂU ĐỒ TOP 10 -->
+            <viz:VizFrame id="chartTop10" uiConfig="{applicationSet:'fiori'}" vizType="bar" width="100%" height="420px">
+                <viz:dataset>
+                    <viz.data:FlattenedDataset data="{dash>/top10}">
+                        <viz.data:dimensions>
+                            <viz.data:DimensionDefinition name="Khách hàng" value="{dash>CustomerName}"/>
+                        </viz.data:dimensions>
+                        <viz.data:measures>
+                            <viz.data:MeasureDefinition name="Giá trị mua" value="{dash>TotalOrderValue}"/>
+                        </viz.data:measures>
+                    </viz.data:FlattenedDataset>
+                </viz:dataset>
+                <viz:feeds>
+                    <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Giá trị mua"/>
+                    <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Khách hàng"/>
+                </viz:feeds>
+            </viz:VizFrame>
+
+            <!-- BIỂU ĐỒ THEO QUỐC GIA / KHU VỰC -->
+            <viz:VizFrame id="chartCountry" uiConfig="{applicationSet:'fiori'}" vizType="column" width="100%" height="380px">
+                <viz:dataset>
+                    <viz.data:FlattenedDataset data="{dash>/byArea}">
+                        <viz.data:dimensions>
+                            <viz.data:DimensionDefinition name="Khu vực" value="{dash>Area}"/>
+                        </viz.data:dimensions>
+                        <viz.data:measures>
+                            <viz.data:MeasureDefinition name="Số khách hàng" value="{dash>CustomerCount}"/>
+                            <viz.data:MeasureDefinition name="Khách có giao dịch" value="{dash>ActiveCount}"/>
+                        </viz.data:measures>
+                    </viz.data:FlattenedDataset>
+                </viz:dataset>
+                <viz:feeds>
+                    <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Số khách hàng,Khách có giao dịch"/>
+                    <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Khu vực"/>
+                </viz:feeds>
+            </viz:VizFrame>
+
+            <!-- BẢNG TOP 10 -->
+            <Table id="top10Table" headerText="Top 10 khách hàng (bấm vào dòng để xem lịch sử đơn)" items="{dash>/top10}" class="sapUiSmallMarginTop">
+                <columns>
+                    <Column width="3rem">
+                        <Text text="#"/>
+                    </Column>
+                    <Column>
+                        <Text text="Khách hàng"/>
+                    </Column>
+                    <Column>
+                        <Text text="Quốc gia"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="Số đơn"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="Giá trị mua"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Navigation" press=".onTop10Press">
+                        <cells>
+                            <Text text="{dash>Rank}"/>
+                            <ObjectIdentifier title="{dash>CustomerName}" text="{dash>CustomerNumber}"/>
+                            <Text text="{dash>Country}"/>
+                            <Text text="{dash>TotalOrders}"/>
+                            <ObjectNumber number="{path: 'dash>TotalOrderValue', formatter: '.formatAmount'}" unit="{dash>Currency}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>
